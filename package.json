@@ -1,0 +1,28 @@
+{
+  "name": "siteswap-generator",
+  "version": "0.0.1",
+  "description": "siteswap generator",
+  "main": "index.js",
+  "bin": {
+    "siteswap-generator": "siteswap-generator.js"
+  },
+  "dependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-jshint": "^0.11.0",
+    "grunt-browserify": "^3.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "siteswap",
+    "juggler",
+    "juggling",
+    "balls",
+    "pattern",
+    "patterns"
+  ],
+  "author": "Xavier Garcia Buils <xgbuils@gmail.com>",
+  "license": "ISC"
+}

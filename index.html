@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ca">
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="dist/css/main.css" />
+    <script src="dist/siteswap-generator.js"></script>
+    <title>title</title>
+</head>
+<body>
+	<form id="form">
+		<fieldset>
+	        <legend>boles:</legend>
+            <label>Min:</label>
+	        <input type="number" name="balls-min" id="balls-min" value="3" required/>
+	        <label>Max:</label>
+	        <input type="number" name="balls-max" id="balls-max" value="3" required/>
+	    </fieldset>
+	    <fieldset>
+	        <legend>període:</legend>
+            <label>Min:</label>
+	        <input type="number" name="period-min" id="period-min" value="2" required/>
+	        <label>Max:</label>
+	        <input type="number" name="period-max" id="period-max" value="3" required/>
+	    </fieldset>
+	    <fieldset>
+	        <legend>hight:</legend>
+            <label>Min:</label>
+	        <input type="number" name="hight-min" id="hight-min" />
+	        <label>Max:</label>
+	        <input type="number" name="hight-max" id="hight-max" value="5" />
+	    </fieldset>
+	    <input type="submit" id="submit" value="generar" />
+	</form>
+	<p id="message">
+		<span id="error"></span>
+		<span id="success">
+			Patrons <span id="p-balls"></span> <span id="p-period"></span> <span id="p-hight"></span>
+		</span>
+	</p> 
+	<div id="patterns">
+	</div>
+</body>
+</html>
