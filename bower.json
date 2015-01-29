@@ -1,0 +1,26 @@
+{
+  "name": "siteswap-generator",
+  "main": "index.js",
+  "version": "0.0.0",
+  "homepage": "https://github.com/xgbuils/siteswap-generator",
+  "authors": [
+    "Xavier Garcia Buils <xgbuils@gmail.com>"
+  ],
+  "description": "siteswap generator",
+  "keywords": [
+    "siteswap",
+    "generator",
+    "juggling",
+    "juggler",
+    "balls"
+  ],
+  "license": "ISC",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

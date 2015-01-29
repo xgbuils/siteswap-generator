@@ -6,7 +6,7 @@ function copyObject (obj) {
     return o
 }
 
-function siteswapGenerator (balls, period, hight) {
+function siteswapGenerator (balls, period, height) {
     var patterns = []
 
     if (typeof balls === 'number')
@@ -19,29 +19,29 @@ function siteswapGenerator (balls, period, hight) {
     if (period.min === undefined)
         period.min = 1
 
-    if (hight === undefined)
-        hight = {max: period.max * balls.max}
-    else if (typeof hight === 'number')
-        hight = {max: hight}
-    else if (typeof hight.max !== 'number')
-        hight.max = period.max * balls.max
-    if (hight.min === undefined)
-        hight.min = 0
+    if (height === undefined)
+        height = {max: period.max * balls.max}
+    else if (typeof height === 'number')
+        height = {max: height}
+    else if (typeof height.max !== 'number')
+        height.max = period.max * balls.max
+    if (height.min === undefined)
+        height.min = 0
 
-    console.log(balls, period, hight)
+    console.log(balls, period, height)
 
     for (var b = balls.max; b >= balls.min; --b) {
-        var hightMax, hightMin
+        var heightMax, heightMin
         var periodMin = Math.max(period.min, 2)
         for (var p = period.max; p >= periodMin; --p) {
-            hightMax = Math.min(hight.max, p * b)
-            hightMin = Math.max(hight.min, b + 1)
+            heightMax = Math.min(height.max, p * b)
+            heightMin = Math.max(height.min, b + 1)
 
-            for (var h = hightMax; h >= hightMin; --h) {
+            for (var h = heightMax; h >= heightMin; --h) {
                 specificPatterns(b, p, h, patterns)
             }
         }
-        if (period.min <= 1 && 1 <= period.max && hight.min <= b && b <= hight.max)
+        if (period.min <= 1 && 1 <= period.max && height.min <= b && b <= height.max)
             patterns.push([b])
     }
 
