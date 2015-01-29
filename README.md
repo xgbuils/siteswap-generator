@@ -1,20 +1,20 @@
-*siteswap generator
+#siteswap generator
 
 siteswap info: http://en.wikipedia.org/wiki/Siteswap
 
 script for finding vanilla juggling patterns given a range of balls, periods and heights.
 
-**Install
+##Install
 ``` bash
 npm install siteswap-generator
 ```
 
-**Use bash script:
+##Use bash script:
 ``` bash
 node bin/siteswap-generator.js [minBalls:]maxBalls [minPeriod:]maxPeriod [minHeight:]maxHeight
 ```
 
-***sample:
+###sample:
 ``` bash
 node bin/siteswap-generator.js 3 2:3 5
 [ [ 5, 3, 1 ],
@@ -26,12 +26,12 @@ node bin/siteswap-generator.js 3 2:3 5
   [ 4, 2 ] ]
 ```
 
-**Use for node:
+##Use for node:
 ``` bash
 node bin/siteswap-generator.js [minBalls:]maxBalls [minPeriod:]maxPeriod [minHeight:]maxHeight
 ```
 
-***sample:
+###sample:
 ``` javascript
 var siteswapGenerator = require('siteswap-generator')
 

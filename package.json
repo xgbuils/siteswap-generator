@@ -1,10 +1,14 @@
 {
   "name": "siteswap-generator",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "siteswap generator",
   "main": "index.js",
   "bin": {
-    "siteswap-generator": "siteswap-generator.js"
+    "siteswap-generator": "./bin/siteswap-generator.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xgbuils/siteswap-generator.git"
   },
   "dependencies": {
     "grunt": "^0.4.5",

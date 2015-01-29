@@ -1,7 +1,7 @@
 {
   "name": "siteswap-generator",
   "main": "index.js",
-  "version": "0.0.0",
+  "version": "0.0.2",
   "homepage": "https://github.com/xgbuils/siteswap-generator",
   "authors": [
     "Xavier Garcia Buils <xgbuils@gmail.com>"
@@ -20,6 +20,7 @@
     "**/.*",
     "node_modules",
     "bower_components",
+    "gh-pages",
     "test",
     "tests"
   ]
