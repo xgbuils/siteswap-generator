@@ -1,5 +1,4 @@
 var siteswapGenerator = require('../../siteswap-generator.js')
-var scrollTo = require('./scrollTo.js')
 
 var generateText = {
     balls: function (text, balls, $output) {

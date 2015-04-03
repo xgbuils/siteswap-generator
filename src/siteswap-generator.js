@@ -6,6 +6,8 @@ function copyObject (obj) {
     return o
 }
 
+console.log('holaaa aa')
+
 function siteswapGenerator (balls, period, height) {
     var patterns = []
 
