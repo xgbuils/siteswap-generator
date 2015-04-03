@@ -38,7 +38,7 @@ function siteswapGenerator (balls, period, height) {
             heightMin = Math.max(height.min, b + 1)
 
             for (var h = heightMax; h >= heightMin; --h) {
-                specificPatterns(b, p, h, patterns)
+                pushSpecificPatterns(b, p, h, patterns)
             }
         }
         if (period.min <= 1 && 1 <= period.max && height.min <= b && b <= height.max)
@@ -48,7 +48,16 @@ function siteswapGenerator (balls, period, height) {
     return patterns
 }
 
-function specificPatterns(balls, period, top, patterns) {
+/*
+ * push in `patterns` the sequence of valid patterns with specified number of balls,
+ * number of period and at least one throw with `top` height and no highger.
+ *
+ * @param {number} balls
+ * @param {number} period
+ * @param {number} top
+ * @param {Array}  patterns
+ */
+function pushSpecificPatterns(balls, period, top, patterns) {
     if (period === 1 && balls === top) {
         patterns.push([balls])
     } else {
