@@ -94,3 +94,11 @@ gulp.task('serve', ['build'], function() {
 
   return bundle()
 })
+
+/*
+ * test task
+ */
+gulp.task('test', function() {
+  return gulp.src('test/siteswap-generator.js', {read: false})
+    .pipe(mocha())
+})

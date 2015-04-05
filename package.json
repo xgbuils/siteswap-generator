@@ -20,6 +20,7 @@
     "gulp-uglify": "^1.1.0",
     "gulp-util": "^3.0.4",
     "nib": "^1.1.0",
+    "should": "^5.2.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.1.0"
   },
