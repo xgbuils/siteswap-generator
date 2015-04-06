@@ -15,57 +15,64 @@ function errorMessage(parameterName, parameterType, expectedTypes) {
          + '. Expected ' + expectedTypes.join(' or ') + '.'
 }
 
-function checkValidParameter (paramName, paramValue, defaultMinValue, defaultMaxValue) {
-    if     (typeof paramValue === 'number') {
-        paramValue = { max: paramValue }
-    }
-    if (isNonNullObject(paramValue)) {
-        if (defaultMaxValue !== undefined && paramValue.max === undefined) {
-            paramValue.max = defaultMaxValue
-        } else if (typeof paramValue.max !== 'number') {
-            throw new Error(errorMessage(
-                paramName + '.max', 
-                paramValue.max === null ? 'null' : typeof paramValue.max, 
-                ['number']
-            ))
-        }
-        if (paramValue.min === undefined) {
-            paramValue.min = defaultMinValue
-        } else if (typeof paramValue.min !== 'number') {
-            throw new Error(errorMessage(
-                paramName + '.min', 
-                paramValue.min === null ? 'null' : typeof paramValue.min, 
-                ['number', 'undefined']
-            ))
+function checkValidParameter (params, paramName, defaultMinValue, defaultMaxValue) {
+    var paramValue = params[paramName]
+    var maxValueOK = defaultMaxValue !== undefined
+    var minVaLueOK = defaultMinValue !== undefined
+    if     (minVaLueOK && maxValueOK && paramValue === undefined) {
+        paramValue = {
+            max: typeof defaultMaxValue === 'function' ? defaultMaxValue(params) : defaultMaxValue,
+            min: typeof defaultMinValue === 'function' ? defaultMinValue(params) : defaultMinValue
         }
     } else {
-        throw new Error(errorMessage(
-            paramName, 
-            paramValue === null ? 'null' : typeof paramValue, 
-            ['number', 'non-null object']
-        ))
+        if     (typeof paramValue === 'number') {
+            params[paramName] = paramValue = { max: paramValue }
+        }
+        if (isNonNullObject(paramValue)) {
+            if (maxValueOK && paramValue.max === undefined) {
+                paramValue.max = typeof defaultMaxValue === 'function' ? defaultMaxValue(params) : defaultMaxValue
+            } else if (typeof paramValue.max !== 'number') {
+                throw new Error(errorMessage(
+                    paramName + '.max', 
+                    paramValue.max === null ? 'null' : typeof paramValue.max, 
+                    ['number']
+                ))
+            }
+            if (paramValue.min === undefined) {
+                paramValue.min = typeof defaultMinValue === 'function' ? defaultMinValue(params) : defaultMinValue
+            } else if (typeof paramValue.min !== 'number') {
+                throw new Error(errorMessage(
+                    paramName + '.min', 
+                    paramValue.min === null ? 'null' : typeof paramValue.min, 
+                    ['number', 'undefined']
+                ))
+            }
+        } else {
+            throw new Error(errorMessage(
+                paramName, 
+                paramValue === null ? 'null' : typeof paramValue, 
+                ['number', 'non-null object']
+            ))
+        }
     }
     return paramValue
 }
 
 function siteswapGenerator (balls, period, height) {
     var patterns = []
-    var beginText
-    var endText
+    var params = {balls: balls, period: period, height: height}
 
-    balls  = checkValidParameter('balls', balls, balls && balls.max)
-    period = checkValidParameter('period', period, 1)
-    height = checkValidParameter('height', height, 0, height && height.min * height.max)
-    /*if (height === undefined)
-        height = {max: period.max * period.max}
-    else if (typeof height === 'number')
-        height = {max: height}
-    else if (typeof height.max !== 'number')
-        height.max = period.max * balls.max
-    if (height.min === undefined)
-        height.min = 0*/
+    params.balls  = balls  = checkValidParameter(params, 'balls', function(params) {
+        return params.balls.max
+    })
 
-    console.log(balls, period, height)
+    params.period = period = checkValidParameter(params, 'period', 1)
+
+    params.height = height = checkValidParameter(params, 'height', 0, function (params) {
+        return params.balls.max * params.period.max
+    })
+
+    //console.log(balls, period, height)
 
     for (var b = balls.max; b >= balls.min; --b) {
         var heightMax, heightMin
