@@ -187,3 +187,48 @@ describe('trivial returns', function () {
         siteswapGenerator(1, {min: 3, max: 3}, 1).should.be.eql([])
     })
 })
+
+describe('complex returns', function () {
+    it('should return array of all non-repeated patterns from 1 to 3 balls and period 1', function () {
+        siteswapGenerator({min: 1, max: 3}, 1).sort().should.be.eql([[1], [2], [3]])
+    })
+    it('should return array of all non-repeated patterns from -6 to 3 balls and period 1', function () {
+        siteswapGenerator({min: -6, max: 3}, 1).sort().should.be.eql([[0],[1], [2], [3]])
+    })
+    it('should return array of all non-repeated patterns width 1 ball and periods from 1 to 3', function () {
+        siteswapGenerator(1, 3).sort().should.be.eql([[1], [2,0], [2,0,1], [3,0,0]])
+    })
+    it('should return array of all non-repeated patterns width 3 balls and period from 3 to 3 and height 5', function () {
+        siteswapGenerator(3, {min: 3, max:3}, 5).sort().should.be.eql([[4,2,3], [4,4,1], [5,0,4], [5,2,2], [5,3,1]])
+    })
+    it('should return array of all non-repeated patterns width 3 balls and period from 3 to 3', function () {
+        siteswapGenerator(3, {min: 3, max:3}).sort().should.be.eql([
+            [4,2,3], [4,4,1], 
+            [5,0,4], [5,2,2], [5,3,1],
+            [6,0,3], [6,1,2], [6,3,0],
+            [7,1,1], [7,2,0],
+            [8,0,1],
+            [9,0,0]
+        ])
+    })
+    it('should return array of all non-repeated patterns from 1 to 3 balls and period from 1 to 3 and height 5', function () {
+        siteswapGenerator({min: 1, max:3}, {min: 1, max:3}, 5).sort().should.be.eql([
+            [1],
+            [2], [2,0], [2,0,1],
+            [3], [3,0,0], [3,1], [3,1,2], [3,3,0],
+            [4,0], [4,1,1], [4,2], [4,2,0], [4,2,3], [4,4,1], 
+            [5,0,1], [5,0,4], [5,1], [5,2,2], [5,3,1]
+        ])
+    })
+    it('should return array of all non-repeated patterns from 3 to 4 balls and period from 2 to 5 and height from 4 to 8', function () {
+        siteswapGenerator({min: 3, max:4}, {min: 2, max:5}, 5).sort().should.be.eql([
+            [4,2], [4,2,3], [4,2,3,3], [4,2,3,3,3], [4,2,4,2,3],
+            [4,4,1], [4,4,1,3], [4,4,1,3,3], [4,4,1,4,2], [4,4,4,0], [4,4,4,0,3],
+            [5,0,2,4,4], [5,0,4],
+            [5,1], [5,1,2,3,4], [5,1,2,4], [5,1,4,1,4], [5,1,4,5,0],
+            [5,2,2], [5,2,2,3], [5,2,2,3,3], [5,2,2,4,2], [5,2,4,1], [5,2,4,1,3], [5,2,4,4,0], [5,2,5,1,2],
+            [5,3], [5,3,0,3,4], [5,3,0,4], [5,3,0,5,2], [5,3,1], [5,3,1,3], [5,3,1,3,3], [5,3,1,4,2], [5,3,4], [5,3,4,0], [5,3,4,0,3], [5,3,4,4], [5,3,4,4,4], [5,3,5,0,2], [5,3,5,3,4],
+            [5,5,0,1,4], [5,5,0,5,0], [5,5,1,1], [5,5,1,1,3], [5,5,1,4,0], [5,5,2], [5,5,2,0], [5,5,2,0,3], [5,5,2,4], [5,5,2,4,4], [5,5,2,5,3], [5,5,5,0,0], [5,5,5,1], [5,5,5,1,4], [5,5,5,5,0],
+        ])
+    })
+})

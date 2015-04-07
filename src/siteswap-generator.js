@@ -107,16 +107,18 @@ function pushSpecificPatterns(balls, period, top, patterns) {
     } else {
         var used = {}
         used[top % period] = true
-        recursive(period, top, used, {
+        recursive(period, top, {
+            used  : used,
             array : [top],
             index : 0,
+            indexs: [0],
             pos   : 1,
             rest  : balls * period - top
         }, patterns)
     }
 }
 
-function recursive(period, top, used, pattern, patterns) {
+function recursive(period, top, pattern, patterns) {
     if (pattern.pos < period) {
         var n   = period - pattern.pos
         var val = pattern.array[pattern.index]
@@ -126,22 +128,26 @@ function recursive(period, top, used, pattern, patterns) {
         if (n > 1) min++
         min = Math.max(min, 0)
         for (var i = max; i >= min; --i) {
+            // always val >= i ?
             var index = val > i ? 0 : pattern.index + 1
-            var num = (i + pattern.pos) % period
-            if (used[num] === undefined) {
-                var newUsed  = copyObject(used)
-                newUsed[num] = true
-                recursive(period, top, newUsed, {
-                    array: pattern.array.concat([i]),
-                    index: index,
-                    pos:   pattern.pos + 1,
-                    rest:  pattern.rest - i
+            var num   = (i + pattern.pos) % period
+            if (pattern.used[num] === undefined) {
+                pattern.used[num] = true
+                pattern.array.push(i)
+                recursive(period, top, {
+                    used:   pattern.used,
+                    array:  pattern.array,
+                    index:  index,
+                    pos:    pattern.pos + 1,
+                    rest:   pattern.rest - i
                 }, patterns)
+                pattern.array.pop()
+                pattern.used[num] = undefined
             }
         }
     } else {
         if (pattern.index === 0) {
-            patterns.push(pattern.array)
+            patterns.push([].concat(pattern.array))
         }
     }
 }
