@@ -102,53 +102,102 @@ function siteswapGenerator (balls, period, height) {
  * @param {Array}  patterns
  */
 function pushSpecificPatterns(balls, period, top, patterns) {
-    if (period === 1 && balls === top) {
-        patterns.push([balls])
-    } else {
-        var used = {}
-        used[top % period] = true
-        recursive(period, top, {
-            used  : used,
-            array : [top],
-            index : 0,
-            indexs: [0],
-            pos   : 1,
-            rest  : balls * period - top
-        }, patterns)
+    iterative({
+        balls: balls,
+        period: period, 
+        maxHeight: top,
+    }, patterns)
+}
+
+function Stack() {
+    this.elems = []
+}
+
+Stack.prototype = {
+    push: function (e) {
+        return this.elems.push(e)
+    },
+    pop: function () {
+        return this.elems.pop()
+    },
+    top: function () {
+        return this.elems[this.elems.length - 1]
+    },
+    empty: function () {
+        return this.elems <= 0
     }
 }
 
-function recursive(period, top, pattern, patterns) {
-    if (pattern.pos < period) {
-        var n   = period - pattern.pos
-        var val = pattern.array[pattern.index]
+function createScope (state) {
+    var n   = state.period - state.pos
+    state.i = Math.min(state.val, state.rest)
+    var min = state.rest - state.maxHeight * (n - 1)
+    if (n > 1) min++
+    state.top = {
+        min: Math.max(min, 0)
+    }
+}
 
-        var max = Math.min(val, pattern.rest)
-        var min = pattern.rest - top * (n - 1)
-        if (n > 1) min++
-        min = Math.max(min, 0)
-        for (var i = max; i >= min; --i) {
-            // always val >= i ?
-            var index = val > i ? 0 : pattern.index + 1
-            var num   = (i + pattern.pos) % period
-            if (pattern.used[num] === undefined) {
-                pattern.used[num] = true
-                pattern.array.push(i)
-                recursive(period, top, {
-                    used:   pattern.used,
-                    array:  pattern.array,
-                    index:  index,
-                    pos:    pattern.pos + 1,
-                    rest:   pattern.rest - i
-                }, patterns)
-                pattern.array.pop()
-                pattern.used[num] = undefined
-            }
-        }
+function popScope(state, array, indexs, stack, used) {
+    indexs.pop()
+    state.index = indexs[indexs.length - 1]
+    state.val   = array[state.index]
+    state.top   = stack.pop()
+    --state.pos
+    state.rest += state.i = array.pop()
+    state.num   = (state.i + state.pos) % state.period
+    used[state.num] = undefined
+    --state.i
+}
+
+function iterative(state, patterns) {
+    if (state.period === 1 && state.balls === state.maxHeight) {
+        patterns.push([balls])
     } else {
-        if (pattern.index === 0) {
-            patterns.push([].concat(pattern.array))
-        }
+        var used   = {}
+        used[state.maxHeight % state.period] = true
+        var stack  = new Stack()
+        var array  = [state.maxHeight]
+        var indexs = [0]
+        state.pos   = 1
+        state.rest  = state.balls * state.period - state.maxHeight
+        state.val   = state.maxHeight
+        state.index = 0
+        state.top   = {}
+        
+        createScope(state)
+        do {
+            if (state.pos < state.period) {
+                if (state.i < state.top.min) {
+                    popScope(state, array, indexs, stack, used)
+                } else {
+                    state.num = (state.i + state.pos) % state.period
+                    if (used[state.num] === undefined) {
+                        used[state.num] = true
+                        array.push(state.i)
+                        // always state.val >= state.i
+                        state.index = state.val > state.i ? 0 : state.index + 1
+                        indexs.push(state.index)
+                        state.val = array[state.index]
+
+                        state.rest -= state.i
+                        stack.push(state.top)
+                        ++state.pos
+
+                        if (state.pos < state.period) {
+                            createScope(state)
+                        }
+                    } else {
+                        --state.i
+                    }
+                }
+            } else {
+                if (state.index === 0) {
+                    patterns.push([].concat(array))
+                }
+                popScope(state, array, indexs, stack, used)
+            }
+        } while ((state.i >= state.top.min || state.pos !== 1))
     }
 }
 
