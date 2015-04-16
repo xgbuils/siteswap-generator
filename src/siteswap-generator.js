@@ -58,55 +58,69 @@ function checkValidParameter (params, paramName, defaultMinValue, defaultMaxValu
     return paramValue
 }
 
+function getNextPattern (state) {
+    while (state.b >= state.balls.min) {
+        if (state.p === undefined) {
+            state.p = state.period.max
+            periodMin = Math.max(state.period.min, 2)
+        }
+        
+        while (state.p >= periodMin) {
+            if (state.h === undefined) {
+                heightMax = Math.min(state.height.max, state.p * state.b)
+                heightMin = Math.max(state.height.min, state.b + 1)
+                state.h = heightMax
+            }
+
+            while (state.h >= heightMin) {
+                if (state.pos === undefined)  {
+                    createStateVariables(state)
+                }
+                var pattern = getNextSpecificPattern(state)
+                while (pattern) {
+                    return pattern
+                }
+                state.pos = undefined
+                --state.h
+            }
+            state.h = undefined
+            --state.p
+        }
+        if (state.period.min <= 1 && 1 <= state.period.max && state.height.min <= state.b && state.b <= state.height.max) {
+            state.p = undefined
+            return [state.b--]
+        }
+        state.p = undefined
+        --state.b
+    }
+
+    return false
+}
+
 function siteswapGenerator (balls, period, height) {
     var patterns = []
-    var params = {balls: balls, period: period, height: height}
+    var state = {balls: balls, period: period, height: height}
 
-    params.balls  = balls  = checkValidParameter(params, 'balls', function(params) {
-        return params.balls.max
+    state.balls  = balls  = checkValidParameter(state, 'balls', function(state) {
+        return state.balls.max
     })
 
-    params.period = period = checkValidParameter(params, 'period', 1)
+    state.period = period = checkValidParameter(state, 'period', 1)
 
-    params.height = height = checkValidParameter(params, 'height', 0, function (params) {
-        return params.balls.max * params.period.max
+    state.height = height = checkValidParameter(state, 'height', 0, function (state) {
+        return state.balls.max * state.period.max
     })
 
-    //console.log(balls, period, height)
+    var heightMax, heightMin, periodMin
+    state.b = state.balls.max
 
-    for (var b = balls.max; b >= balls.min; --b) {
-        var heightMax, heightMin
-        var periodMin = Math.max(period.min, 2)
-        for (var p = period.max; p >= periodMin; --p) {
-            heightMax = Math.min(height.max, p * b)
-            heightMin = Math.max(height.min, b + 1)
-
-            for (var h = heightMax; h >= heightMin; --h) {
-                pushSpecificPatterns(b, p, h, patterns)
-            }
-        }
-        if (period.min <= 1 && 1 <= period.max && height.min <= b && b <= height.max)
-            patterns.push([b])
+    var pattern = getNextPattern(state)
+    while (pattern) {
+        patterns.push(pattern)
+        pattern = getNextPattern(state)
     }
 
     return patterns
-}
-
-/*
- * push in `patterns` the sequence of valid patterns with specified number of balls,
- * number of period and at least one throw with `top` height and no highger.
- *
- * @param {number} balls
- * @param {number} period
- * @param {number} top
- * @param {Array}  patterns
- */
-function pushSpecificPatterns(balls, period, top, patterns) {
-    iterative({
-        balls: balls,
-        period: period, 
-        maxHeight: top,
-    }, patterns)
 }
 
 function Stack() {
@@ -137,10 +151,10 @@ function pushScope (state) {
 
     state.stack.push(state.top)
 
-    if (state.pos < state.period) {
-        var n   = state.period - state.pos
+    if (state.pos < state.p) {
+        var n   = state.p - state.pos
         state.i = Math.min(state.val, state.rest)
-        var min = state.rest - state.maxHeight * (n - 1)
+        var min = state.rest - state.h * (n - 1)
         if (n > 1) min++
         state.top = {
             min: Math.max(min, 0),
@@ -157,35 +171,21 @@ function popScope(state) {
     
     --state.pos
     state.rest += state.i = state.array.pop()
-    state.num   = (state.i + state.pos) % state.period
+    state.num   = (state.i + state.pos) % state.p
     state.used[state.num] = undefined
     --state.i
 }
 
-function iterative(state, patterns) {
-    if (state.period === 1 && state.balls === state.maxHeight) {
-        patterns.push([balls])
+function getNextSpecificPattern(state) {
+    if (state.p === 1 && state.b === state.h) {
+        return [balls]
     } else {
-        state.used  = {}
-        state.stack = new Stack()
-        state.array = []
-        state.pos   = 0
-        state.rest  = state.balls * state.period
-        state.val   = state.maxHeight
-        state.top   = {
-            min: state.maxHeight,
-            index: -1
-        }
-        state.i     = state.maxHeight
-        state.num   = state.maxHeight % state.period
-        
-        pushScope(state)
-        do {
-            if (state.pos < state.period) {
+        while ((state.i >= state.top.min || state.pos !== 1)) {
+            if (state.pos < state.p) {
                 if (state.i < state.top.min) {
                     popScope(state)
                 } else {
-                    state.num = (state.i + state.pos) % state.period
+                    state.num = (state.i + state.pos) % state.p
                     if (state.used[state.num] === undefined) {
                         pushScope(state)
                     } else {
@@ -194,12 +194,31 @@ function iterative(state, patterns) {
                 }
             } else {
                 if (state.top.index === 0) {
-                    patterns.push([].concat(state.array))
+                    var pattern = [].concat(state.array)
+                    popScope(state)
+                    return pattern
                 }
                 popScope(state)
             }
-        } while ((state.i >= state.top.min || state.pos !== 1))
+        }
+        return false
     }
+}
+
+function createStateVariables(state) {
+    state.used  = {}
+    state.stack = new Stack()
+    state.array = []
+    state.pos   = 0
+    state.rest  = state.b * state.p
+    state.val   = state.h
+    state.top   = {
+        min: state.h,
+        index: -1
+    }
+    state.i     = state.h
+    state.num   = state.h % state.p
+    pushScope(state)
 }
 
 module.exports = siteswapGenerator
