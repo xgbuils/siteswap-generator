@@ -1,1 +1,4 @@
-module.exports = require('./src/siteswap')
+module.exports = {
+	Buffer:    require('./src/Buffer'),
+	Generator: require('./src/Generator')
+}

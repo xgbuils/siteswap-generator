@@ -1,4 +1,4 @@
-var siteswap = require('../src/siteswap')
+var siteswap = require('../index')
 var should = require('should')
 
 describe('bad parameters', function () {

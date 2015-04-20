@@ -19,7 +19,7 @@ function Buffer(options) {
 }
 
 Buffer.prototype.slice = function (begin, end) {
-	return this.patterns.slice(begin, end)
+    return this.patterns.slice(begin, end)
 }
 
 module.exports = Buffer
