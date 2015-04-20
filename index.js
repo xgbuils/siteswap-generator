@@ -1,1 +1,1 @@
-module.exports = require('./src/siteswap-generator')
+module.exports = require('./src/siteswap')
