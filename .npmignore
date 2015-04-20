@@ -1,0 +1,10 @@
+gh-pages
+bower_components
+test
+.git
+*.log
+*~
+.gitignore
+gulpfile.js
+doc.md
+bower.json
