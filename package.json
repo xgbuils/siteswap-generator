@@ -36,5 +36,8 @@
     "patterns"
   ],
   "author": "Xavier Garcia Buils <xgbuils@gmail.com>",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "lazyarray-lite": "^0.2.0"
+  }
 }

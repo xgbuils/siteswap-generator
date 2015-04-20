@@ -1,3 +1,5 @@
+var LazyArray = require('lazyarray-lite')
+
 function copyObject (obj) {
     var o = {}
     for (var key in obj) {
@@ -94,30 +96,42 @@ function getNextPattern (state) {
         --state.b
     }
 
-    return false
+    return undefined
+}
+
+function initialize () {
+    this.balls  = checkValidParameter(this, 'balls', function(self) {
+        return self.balls.max
+    })
+
+    this.period = checkValidParameter(this, 'period', 1)
+
+    this.height = checkValidParameter(this, 'height', 0, function (self) {
+        return self.balls.max * self.period.max
+    })
+
+    this.b = this.balls.max
 }
 
 function siteswapGenerator (balls, period, height) {
+    var lazyPatterns = new LazyArray({
+        init: function () {
+            this.balls  = balls
+            this.period = period
+            this.height = height
+            initialize.call(this)
+        },
+        next: function () {
+            return getNextPattern(this)
+        }
+    })
     var patterns = []
-    var state = {balls: balls, period: period, height: height}
 
-    state.balls  = balls  = checkValidParameter(state, 'balls', function(state) {
-        return state.balls.max
-    })
-
-    state.period = period = checkValidParameter(state, 'period', 1)
-
-    state.height = height = checkValidParameter(state, 'height', 0, function (state) {
-        return state.balls.max * state.period.max
-    })
-
-    var heightMax, heightMin, periodMin
-    state.b = state.balls.max
-
-    var pattern = getNextPattern(state)
-    while (pattern) {
+    var i = 0
+    var pattern = lazyPatterns.get(i)
+    while (pattern !== undefined) {
         patterns.push(pattern)
-        pattern = getNextPattern(state)
+        pattern = lazyPatterns.get(++i)
     }
 
     return patterns
