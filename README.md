@@ -47,25 +47,31 @@ Returns all of patterns required by `options` object parameter.
 ##### options.balls
 Type: Object | Integer
 
-If `options.balls` is an integer, this is the number of balls of computed patterns.
+If `options.balls` is an object, this mean the interval of balls of computed patterns.
+- `options.balls.max` is maximum number of balls. 
+- `options.balls.min` is minimum number of balls of patterns. If it is not defined the minimum number of balls is the same that `options.balls.max`.
 
-If `options.balls` is an object, this mean the interval of balls of computed patterns. `options.balls.min` is minimum number of balls of patterns and `options.balls.max` is maximum number of balls. Minimum number of balls is the same that `options.balls.max`.
+If `options.balls` is an integer, it is the same that `options.balls` takes value `{min: options.balls, max: options.balls}`.
 
 ##### options.period
 Type: Object | Integer
 
-If `options.period` is an integer, this is the maximum period of computed patterns. Minimum period is 1 by default.
+If `options.period` is an object, this mean the interval of periods which are computed.
+- `options.period.max` is maximum period.
+- `options.period.min` is minimum period. It takes value 1 by default.
 
-If `options.period` is an object, this mean the interval periods of patterns. `options.period.min` is minimum period and `options.period.max` is maximum period.
+If `options.period` is an integer, it is the same that `options.period` takes value `{min: 1, max: options.period}`.
 
 ##### options.height
-Type: Integer | undefined | Object
-
-If `options.height` is an integer, this mean the maximum height of computed patterns.
+Type: Object | integer | undefined
 
 If `options.period` is an object:
-- `options.height.max` mean that computed patterns have heights less than or equal to this. The default value is `options.balls.max` * `options.period.max`
+- `options.height.max` mean that computed patterns have heights less than or equal to this. `options.height.max` is `options.balls.max` * `options.period.max` by default.
 - `options.height.min` mean that computed patterns have at least one height greater than or equal to this. The default value is 0.
+
+If `options.height` is an integer, this mean the same that `options.height` takes value `{min: 0, max: options.height}`.
+
+If `options.height` is undefined, this mean the same that `options.height` takes value `{min: 0, max: options.balls.max * options.period.max}`
 
 ##### Example:
 ``` javascript
@@ -111,6 +117,35 @@ zero-based index at which to begin extraction
 Type: Integer
 
 zero-based index at which to end extraction.
+
+###### Considerations:
+`slice` method get patterns sequentially. If buffer object is created and after got from 11th to 20th pattenrs (`.slice(11,20)`), internally `.slice` compute from first to 20th patterns and returns slice from 11th to 20th requested. Then, if is requested 1st to 10th patterns, these are not computed and only are returned because was previously computed.
+
+##### Example:
+
+``` javascript
+var buffer = siteswap.Buffer({
+    balls : {min: 1, max: 3},
+    period: 3,
+    height: {min: 5}
+})
+
+buffer.slice(0, 5) /* [
+  [ 9, 0, 0 ],
+  [ 8, 0, 1 ],
+  [ 7, 2, 0 ],
+  [ 7, 1, 1 ],
+  [ 6, 3, 0 ],
+]*/
+buffer.slice(5, 10) /* [
+  [ 6, 1, 2 ],
+  [ 6, 0, 3 ],
+  [ 5, 3, 1 ],
+  [ 5, 2, 2 ],
+  [ 5, 0, 4 ],
+]*/
+```
+
 
 ### License
 MIT
