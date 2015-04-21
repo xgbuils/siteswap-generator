@@ -2,6 +2,8 @@ var LazyArray           = require('lazyarray-lite')
 var checkValidParameter = require('./utils.js').checkValidParameter
 
 function Buffer(options) {
+    this.minLength = 0
+    this.maxLength = Infinity
     if (!(this instanceof Buffer)) {
         return new Buffer(options)
     }
@@ -19,7 +21,16 @@ function Buffer(options) {
 }
 
 Buffer.prototype.slice = function (begin, end) {
-    return this.patterns.slice(begin, end)
+    var patterns = this.patterns.slice(begin, end)
+    if (typeof this.length !== 'number') {
+
+        this.minLength = Math.min(this.patterns.maxLength, end)
+        this.maxLength = Math.min(this.patterns.maxLength, this.maxLength)
+        if (this.minLength === this.maxLength) {
+            this.length = this.minLength
+        }
+    }
+    return patterns
 }
 
 module.exports = Buffer

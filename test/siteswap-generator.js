@@ -366,3 +366,47 @@ describe('complex returns', function () {
         ])
     })
 })
+
+describe('buffer tests', function () {
+    describe('when it is got 1st and 2nd pattern', function () {
+        beforeEach(function () {
+           this.buffer = new siteswap.Buffer({
+                balls : {min: 3, max:3},
+                period: {min: 3, max:3},
+                height: {min: 5, max:5},
+            })
+            this.buffer.slice(0,2)
+        })
+
+        it('.minLength should be 2', function () {
+            this.buffer.minLength.should.be.eql(2)
+        })
+        it('.maxLength should be Infinity', function () {
+            this.buffer.maxLength.should.be.eql(Infinity)
+        })
+        it('.length should be undefined', function () {
+            should(this.buffer.length).be.eql(undefined)
+        })
+    })
+
+    describe('when it is got all patterns', function () {
+        beforeEach(function () {
+           this.buffer = new siteswap.Buffer({
+                balls : {min: 3, max:3},
+                period: {min: 3, max:3},
+                height: {min: 5, max:5},
+            })
+            this.buffer.slice(0,4)
+        })
+
+        it('.minLength should be 3', function () {
+            this.buffer.minLength.should.be.eql(3)
+        })
+        it('.maxLength should be 3', function () {
+            this.buffer.maxLength.should.be.eql(3)
+        })
+        it('.length should be 3', function () {
+            this.buffer.length.should.be.eql(3)
+        })
+    })
+})

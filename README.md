@@ -146,6 +146,17 @@ buffer.slice(5, 10) /* [
 ]*/
 ```
 
+##### siteswap.Buffer#length
+Type: integer | undefined
+
+length of patterns if all patterns was computed with `slice` method or undefined if not.
+
+##### siteswap.Buffer#maxLength
+maximum of length of patterns list.
+
+##### siteswap.Buffer#maxLength
+minimum of length of patterns list.
+
 
 ### License
 MIT
