@@ -168,6 +168,36 @@ maximum of length of patterns list.
 ##### siteswap.Buffer#minLength
 minimum of length of patterns list.
 
+## CLI (Comand Line Interface)
 
-### License
+### Install
+``` bash
+$ npm install -g siteswap-generator
+```
+
+### Usage
+``` bash
+$ siteswap [balls.min:]balls.max [period.min:]period.max [[height.min:]height.max]
+```
+
+### Examples
+``` bash
+$ siteswap 3 3 5
+[ [ 5, 3, 1 ],
+  [ 5, 2, 2 ],
+  [ 5, 0, 4 ],
+  [ 4, 4, 1 ],
+  [ 4, 2, 3 ],
+  [ 5, 1 ],
+  [ 4, 2 ],
+  [ 3 ] ]
+```
+
+``` bash
+$ siteswap 1:3 3:3 5:5
+[ [ 5, 3, 1 ], [ 5, 2, 2 ], [ 5, 0, 4 ], [ 5, 0, 1 ] ]
+```
+
+
+## License
 MIT

@@ -4,7 +4,7 @@
   "description": "siteswap generator",
   "main": "index.js",
   "bin": {
-    "siteswap-generator": "./bin/siteswap-generator.js"
+    "siteswap": "./bin/siteswap-generator.js"
   },
   "repository": {
     "type": "git",
