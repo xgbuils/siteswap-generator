@@ -37,6 +37,17 @@ console.log(patterns)
 
 ## API
 
+- [siteswap](#siteswap--moduleexports)
+  - [siteswap.Generator (options)](#siteswapgenerator-options)
+    - [options.balls](#optionsballs)
+    - [options.period](#optionsperiod)
+    - [options.height](#optionsheight)
+  - [siteswap.Buffer (options)](#siteswapbuffer-options)
+    - [siteswap.Buffer#slice (begin, end)](#siteswapbufferslice-begin-end)
+    - [siteswap.Buffer#length](#siteswapbufferlength)
+    - [siteswap.Buffer#maxLength](#siteswapbuffermaxlength)
+    - [siteswap.Buffer#minLength](#siteswapbufferminlength)
+
 ### siteswap === module.exports
 Type: Object
 #### siteswap.Generator (options)
@@ -154,7 +165,7 @@ length of patterns if all patterns was computed with `slice` method or undefined
 ##### siteswap.Buffer#maxLength
 maximum of length of patterns list.
 
-##### siteswap.Buffer#maxLength
+##### siteswap.Buffer#minLength
 minimum of length of patterns list.
 
 
