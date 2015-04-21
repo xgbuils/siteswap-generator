@@ -99,6 +99,6 @@ gulp.task('serve', ['build'], function() {
  * test task
  */
 gulp.task('test', function() {
-  return gulp.src('test/siteswap-generator.js', {read: false})
+  return gulp.src('test/siteswap-generator_test.js', {read: false})
     .pipe(mocha())
 })
