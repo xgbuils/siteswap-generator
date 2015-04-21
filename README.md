@@ -8,6 +8,10 @@ A siteswap pattern can be expressed through number sequence that represent a cyc
 ## Description
 This module allow to compute the whole patterns with specific number of balls, length of cycle (also called period) and heights. Siteswap generator does not compute patterns that are the same except rotations or repetitions. For example, [5,3,1], [3,1,5] and [1,5,3] are the same except rotations and [3,3,3], [3,3] and [3] are the same except repetitions.
 
+
+## Version
+0.2.0
+
 ## Installation
 ``` bash
 npm install siteswap-generator
