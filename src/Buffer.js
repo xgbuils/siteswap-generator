@@ -1,5 +1,8 @@
 var LazyArray           = require('lazyarray-lite')
-var checkValidParameter = require('./utils.js').checkValidParameter
+var _ = require('./utils.js')
+
+var PARAM_NAMES = require('./conf/PARAM_NAMES')
+var DEFAULT_VALUES = require('./conf/DEFAULT_VALUES')
 
 function Buffer(options) {
     this.minLength = 0
@@ -9,10 +12,13 @@ function Buffer(options) {
     }
     this.patterns = new LazyArray({
         init: function () {
-            this.balls  = options.balls
-            this.period = options.period
-            this.height = options.height
-            initialize.call(this)
+            _.transformParams.call(this, options || {}, PARAM_NAMES)
+            _.each(PARAM_NAMES, function (name, i) {
+                _.setDefaultValues.call(this, name, 'max', DEFAULT_VALUES[i])
+                _.setDefaultValues.call(this, name, 'min', DEFAULT_VALUES[i])
+            }, this)
+
+            this.b = this.balls.max
         },
         next: function () {
             return getNextPattern(this)

@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "browser-sync": "^2.5.2",
+    "chai": "^3.5.0",
     "gulp": "^3.8.11",
     "gulp-if": "^1.2.5",
     "gulp-mocha": "^2.0.1",
@@ -38,6 +39,7 @@
   "author": "Xavier Garcia Buils <xgbuils@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "is-object": "^1.0.1",
     "lazyarray-lite": "^0.2.0"
   }
 }

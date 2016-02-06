@@ -1,5 +1,10 @@
-function isNonNullObject(a) {
-    return typeof a === 'object' && a !== null
+var isObject = require('is-object')
+
+function each (array, cb, context) {
+    var n = array.length
+    for (var i = 0; i < n; ++i) {
+        cb.call(context, array[i], i, array)
+    }
 }
 
 function errorMessage(parameterName, parameterType, expectedTypes) {
@@ -7,49 +12,49 @@ function errorMessage(parameterName, parameterType, expectedTypes) {
          + '. Expected ' + expectedTypes.join(' or ') + '.'
 }
 
-function checkValidParameter (params, paramName, defaultMinValue, defaultMaxValue) {
-    var paramValue = params[paramName]
-    var maxValueOK = defaultMaxValue !== undefined
-    var minVaLueOK = defaultMinValue !== undefined
-    if     (minVaLueOK && maxValueOK && paramValue === undefined) {
-        paramValue = {
-            max: typeof defaultMaxValue === 'function' ? defaultMaxValue(params) : defaultMaxValue,
-            min: typeof defaultMinValue === 'function' ? defaultMinValue(params) : defaultMinValue
-        }
-    } else {
-        if     (typeof paramValue === 'number') {
-            params[paramName] = paramValue = { max: paramValue }
-        }
-        if (isNonNullObject(paramValue)) {
-            if (maxValueOK && paramValue.max === undefined) {
-                paramValue.max = typeof defaultMaxValue === 'function' ? defaultMaxValue(params) : defaultMaxValue
-            } else if (typeof paramValue.max !== 'number') {
-                throw new Error(errorMessage(
-                    paramName + '.max', 
-                    paramValue.max === null ? 'null' : typeof paramValue.max, 
-                    ['number']
-                ))
-            }
-            if (paramValue.min === undefined) {
-                paramValue.min = typeof defaultMinValue === 'function' ? defaultMinValue(params) : defaultMinValue
-            } else if (typeof paramValue.min !== 'number') {
-                throw new Error(errorMessage(
-                    paramName + '.min', 
-                    paramValue.min === null ? 'null' : typeof paramValue.min, 
-                    ['number', 'undefined']
-                ))
-            }
-        } else {
-            throw new Error(errorMessage(
-                paramName, 
-                paramValue === null ? 'null' : typeof paramValue, 
-                ['number', 'non-null object']
-            ))
-        }
+var _ = {}
+
+each(['Function', 'Number'], function(name) {
+    _['is' + name] = function(obj) {
+        return toString.call(obj) === '[object ' + name + ']'
     }
-    return paramValue
+})
+
+var isNumber = _.isNumber
+
+function transformParams (params, paramNames) {
+    each(paramNames, function (name) {
+        var value = params[name]
+        var ref = this[name] = {}
+        if (isNumber(value)) {
+            ref.max = value
+        } else if (isObject(value)) {
+            each(['max', 'min'], function (key) {
+                var val = value[key]
+                if (isNumber(val)) {
+                    ref[key] = val
+                }
+            })
+        }
+    }, this)
+}
+
+function setDefaultValues (paramName, key, defaults, error) {
+    var ref = this[paramName]
+    if (ref[key] === undefined) {
+        var defaultValue = defaults[key]
+        if (isNumber(defaultValue)) {
+            ref[key] = defaultValue
+        } else if (_.isFunction(defaultValue)) {
+            ref[key] = defaultValue.call(this)
+        } else {
+            throw new Error(error(paramName, key))
+        } 
+    }
 }
 
 module.exports = {
-    checkValidParameter: checkValidParameter
+    transformParams: transformParams,
+    setDefaultValues: setDefaultValues,
+    each: each
 }

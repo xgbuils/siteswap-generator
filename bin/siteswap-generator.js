@@ -14,7 +14,7 @@ var patterns = siteswap.Generator(options)
 console.log(patterns)
 
 function convertArg (arg) {
-    var arr = arg.split(':')
+    var arr = arg.split('..')
     if        (arr.length === 1) {
         return {max: parseInt(arr[0])}
     } else if (arr.length === 2) {
