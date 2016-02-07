@@ -12,18 +12,45 @@ function Generator(options) {
     }
     this.patterns = new LazyArray({
         init: function () {
-            _.transformParams.call(this, options || {}, PARAM_NAMES)
-            _.each(PARAM_NAMES, function (name, i) {
-                _.setDefaultValues.call(this, name, 'max', DEFAULT_VALUES[i])
-                _.setDefaultValues.call(this, name, 'min', DEFAULT_VALUES[i])
-            }, this)
-
-            this.b = this.balls.max
+            this.state = new State(options)
         },
         next: function () {
-            return getNextPattern(this)
+            return getNextPattern(this.state)
         }
     })
+}
+
+function State (options) {
+    _.transformParams.call(this, options || {}, PARAM_NAMES)
+    _.each(PARAM_NAMES, function (name, i) {
+        _.setDefaultValues.call(this, name, 'max', DEFAULT_VALUES[i])
+        _.setDefaultValues.call(this, name, 'min', DEFAULT_VALUES[i])
+    }, this)
+
+    this.methods = {
+        start: {
+            b: function () {
+                this.b = this.balls.max
+                this.bMin = this.balls.min
+            },
+            p: function () {
+                this.p = this.period.max
+                this.pMin = Math.max(this.period.min, 2)
+            },
+            h: function () {
+                this.h = Math.min(this.height.max, this.p * this.b)
+                this.hMin = Math.max(this.height.min, this.b + 1)
+            }
+        }
+    }
+}
+
+State.prototype.start = function (ch) {
+    this.methods.start[ch].call(this)
+}
+
+State.prototype.cond = function (ch) {
+    return this[ch] >= this[ch + 'Min']
 }
 
 Generator.prototype.slice = function (begin, end) {
@@ -42,28 +69,25 @@ Generator.prototype.slice = function (begin, end) {
 module.exports = Generator
 
 function getNextPattern (state) {
-    while (state.b >= state.balls.min) {
+    if (state.b === undefined) {
+        state.start('b')
+    }
+
+    while (state.cond('b')) {
         if (state.p === undefined) {
-            state.p = state.period.max
-            periodMin = Math.max(state.period.min, 2)
+            state.start('p')
         }
         
-        while (state.p >= periodMin) {
+        while (state.cond('p')) {
             if (state.h === undefined) {
-                heightMax = Math.min(state.height.max, state.p * state.b)
-                heightMin = Math.max(state.height.min, state.b + 1)
-                state.h = heightMax
+                state.start('h')
             }
 
-            while (state.h >= heightMin) {
-                if (state.pos === undefined)  {
-                    createStateVariables(state)
-                }
+            while (state.cond('h')) {
                 var pattern = getNextSpecificPattern(state)
-                while (pattern) {
+                if (pattern)  {
                     return pattern
                 }
-                state.pos = undefined
                 --state.h
             }
             state.h = undefined
@@ -97,6 +121,9 @@ function createStateVariables(state) {
 }
 
 function getNextSpecificPattern(state) {
+    if (state.pos === undefined)  {
+        createStateVariables(state)
+    }
     if (state.p === 1 && state.b === state.h) {
         return [balls]
     } else {
@@ -121,6 +148,7 @@ function getNextSpecificPattern(state) {
                 popScope(state)
             }
         }
+        state.pos = undefined
         return false
     }
 }
