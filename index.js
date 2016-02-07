@@ -1,4 +1,4 @@
 module.exports = {
-	Buffer:    require('./src/Buffer'),
-	Generator: require('./src/Generator')
+	Generator: require('./src/Generator'),
+	calculate: require('./src/calculate')
 }

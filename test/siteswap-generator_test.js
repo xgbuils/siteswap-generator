@@ -3,59 +3,59 @@ var should = require('should')
 
 describe('trivial returns', function () {
     it('should return empty array if balls.min is greater than balls.max. ', function () {
-        siteswap.Generator({
+        siteswap.calculate({
             balls : {min: 3, max: 1},
             period: 1
         }).should.be.eql([])
     })
     it('should return empty array if interval of balls is under 0.', function () {
-        siteswap.Generator({
+        siteswap.calculate({
             balls : {min: -3, max: -1},
             period: 1
         }).should.be.eql([])
     })
     it('should return [[1]] if balls is 1 and period is 1. ', function () {
-        siteswap.Generator({
+        siteswap.calculate({
             balls : 1,
             period: 1
         }).should.be.eql([[1]])
     })
     it('should return [[3]] if balls is 3 and period is 1. ', function () {
-        siteswap.Generator({
+        siteswap.calculate({
             balls : 3,
             period: 1
         }).should.be.eql([[3]])
     })
     it('should return empty array if balls is 3, period is 1 and height lower than 3. ', function () {
-        siteswap.Generator({
+        siteswap.calculate({
             balls : 3,
             period: 1,
             height: 2
         }).should.be.eql([])
     })
     it('should return [[3]] if balls is 3, period is 1 and height greater or equal than 3. ', function () {
-        siteswap.Generator({
+        siteswap.calculate({
             balls : 3,
             period: 1,
             height: 3
         }).should.be.eql([[3]])
     })
     it('should return [[5]] if balls is 5, period is 1 and height greater or equal than 5. ', function () {
-        siteswap.Generator({
+        siteswap.calculate({
             balls : 5,
             period: 1,
             height: 8
         }).should.be.eql([[5]])
     })
     it('should return [[1]] if balls is 1, period is from 1 to 3 and height is 1.', function () {
-        siteswap.Generator({
+        siteswap.calculate({
             balls : 1,
             period: {min: 1, max: 3},
             height: 1
         }).should.be.eql([[1]])
     })
     it('should return empty array if balls is 1, period is from 3 to 3 and height is 1. Note that [1,1,1] is equivalent to 1-period pattern [1]', function () {
-        siteswap.Generator({
+        siteswap.calculate({
             balls : 1,
             period: {min: 3, max: 3},
             height: 1
@@ -65,32 +65,32 @@ describe('trivial returns', function () {
 
 describe('complex returns', function () {
     it('should return array of all non-repeated patterns from 1 to 3 balls and period 1', function () {
-        siteswap.Generator({
+        siteswap.calculate({
             balls : {min: 1, max: 3},
             period: 1
         }).sort().should.be.eql([[1], [2], [3]])
     })
     it('should return array of all non-repeated patterns from -6 to 3 balls and period 1', function () {
-        siteswap.Generator({
+        siteswap.calculate({
             balls : {min: -6, max: 3},
             period: 1
         }).sort().should.be.eql([[0],[1], [2], [3]])
     })
     it('should return array of all non-repeated patterns width 1 ball and periods from 1 to 3', function () {
-        siteswap.Generator({
+        siteswap.calculate({
             balls : 1,
             period: 3
         }).sort().should.be.eql([[1], [2,0], [2,0,1], [3,0,0]])
     })
     it('should return array of all non-repeated patterns width 3 balls and period from 3 to 3 and height 5', function () {
-        siteswap.Generator({
+        siteswap.calculate({
             balls : 3,
             period: {min: 3, max:3},
             height: 5
         }).sort().should.be.eql([[4,2,3], [4,4,1], [5,0,4], [5,2,2], [5,3,1]])
     })
     it('should return array of all non-repeated patterns width 3 balls and period from 3 to 3', function () {
-        siteswap.Generator({
+        siteswap.calculate({
             balls : 3,
             period: {min: 3, max:3}
         }).sort().should.be.eql([
@@ -103,7 +103,7 @@ describe('complex returns', function () {
         ])
     })
     it('should return array of all non-repeated patterns from 1 to 3 balls and period from 1 to 3 and height 5', function () {
-        siteswap.Generator({
+        siteswap.calculate({
             balls : {min: 1, max:3},
             period: {min: 1, max:3},
             height: 5
@@ -116,7 +116,7 @@ describe('complex returns', function () {
         ])
     })
     it('should return array of all non-repeated patterns from 3 to 4 balls and period from 2 to 5 and height from 4 to 8', function () {
-        siteswap.Generator({
+        siteswap.calculate({
             balls : {min: 3, max:4},
             period: {min: 2, max:5},
             height: 5
@@ -132,46 +132,46 @@ describe('complex returns', function () {
     })
 })
 
-describe('buffer tests', function () {
+describe('generator tests', function () {
     describe('when it is got 1st and 2nd pattern', function () {
         beforeEach(function () {
-           this.buffer = new siteswap.Buffer({
+           this.generator = new siteswap.Generator({
                 balls : {min: 3, max:3},
                 period: {min: 3, max:3},
                 height: {min: 5, max:5},
             })
-            this.buffer.slice(0,2)
+            this.generator.slice(0,2)
         })
 
         it('.minLength should be 2', function () {
-            this.buffer.minLength.should.be.eql(2)
+            this.generator.minLength.should.be.eql(2)
         })
         it('.maxLength should be Infinity', function () {
-            this.buffer.maxLength.should.be.eql(Infinity)
+            this.generator.maxLength.should.be.eql(Infinity)
         })
         it('.length should be undefined', function () {
-            should(this.buffer.length).be.eql(undefined)
+            should(this.generator.length).be.eql(undefined)
         })
     })
 
     describe('when it is got all patterns', function () {
         beforeEach(function () {
-           this.buffer = new siteswap.Buffer({
+           this.generator = new siteswap.Generator({
                 balls : {min: 3, max:3},
                 period: {min: 3, max:3},
                 height: {min: 5, max:5},
             })
-            this.buffer.slice(0,4)
+            this.generator.slice(0,4)
         })
 
         it('.minLength should be 3', function () {
-            this.buffer.minLength.should.be.eql(3)
+            this.generator.minLength.should.be.eql(3)
         })
         it('.maxLength should be 3', function () {
-            this.buffer.maxLength.should.be.eql(3)
+            this.generator.maxLength.should.be.eql(3)
         })
         it('.length should be 3', function () {
-            this.buffer.length.should.be.eql(3)
+            this.generator.length.should.be.eql(3)
         })
     })
 })
