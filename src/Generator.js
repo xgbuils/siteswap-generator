@@ -35,11 +35,11 @@ function State (options) {
             },
             p: function () {
                 this.p = this.period.max
-                this.pMin = Math.max(this.period.min, 2)
+                this.pMin = Math.max(this.period.min, 1)
             },
             h: function () {
                 this.h = Math.min(this.height.max, this.p * this.b)
-                this.hMin = Math.max(this.height.min, this.b + 1)
+                this.hMin = Math.max(this.height.min, this.b + (this.p > 1 ? 1 : 0))
             }
         }
     }
@@ -93,10 +93,6 @@ function getNextPattern (state) {
             state.h = undefined
             --state.p
         }
-        if (state.period.min <= 1 && 1 <= state.period.max && state.height.min <= state.b && state.b <= state.height.max) {
-            state.p = undefined
-            return [state.b--]
-        }
         state.p = undefined
         --state.b
     }
@@ -124,8 +120,13 @@ function getNextSpecificPattern(state) {
     if (state.pos === undefined)  {
         createStateVariables(state)
     }
-    if (state.p === 1 && state.b === state.h) {
-        return [balls]
+    if (state.p === 1) {
+        var pattern = state.pos === 1 ? [state.b] : false
+        --state.pos
+        if (state.pos < 0) {
+            state.pos = undefined
+        }
+        return pattern
     } else {
         while ((state.i >= state.top.min || state.pos !== 1)) {
             if (state.pos < state.p) {
