@@ -120,38 +120,31 @@ function getNextSpecificPattern(state) {
     if (state.pos === undefined)  {
         createStateVariables(state)
     }
-    if (state.p === 1) {
-        var pattern = state.pos === 1 ? [state.b] : false
-        --state.pos
-        if (state.pos < 0) {
-            state.pos = undefined
+    while ((state.i >= state.top.min || state.pos > 1)) {
+        var pattern
+        var posIsEqualToPeriod = state.pos === state.p
+        var existsPattern = posIsEqualToPeriod && state.top.index === 0
+        if (existsPattern) {
+            pattern = [].concat(state.array)
         }
-        return pattern
-    } else {
-        while ((state.i >= state.top.min || state.pos !== 1)) {
-            if (state.pos < state.p) {
-                if (state.i < state.top.min) {
-                    popScope(state)
-                } else {
-                    state.num = (state.i + state.pos) % state.p
-                    if (state.used[state.num] === undefined) {
-                        pushScope(state)
-                    } else {
-                        --state.i
-                    }
-                }
+
+        if (posIsEqualToPeriod || state.i < state.top.min) {
+            popScope(state)
+        } else {
+            state.num = (state.i + state.pos) % state.p
+            if (state.used[state.num] === undefined) {
+                pushScope(state)
             } else {
-                if (state.top.index === 0) {
-                    var pattern = [].concat(state.array)
-                    popScope(state)
-                    return pattern
-                }
-                popScope(state)
+                --state.i
             }
         }
-        state.pos = undefined
-        return false
+
+        if (existsPattern) {
+            return pattern
+        }
     }
+    state.pos = undefined
+    return false
 }
 
 function pushScope (state) {
@@ -181,7 +174,8 @@ function pushScope (state) {
 function popScope(state) {
     state.top = state.stack.pop()
 
-    state.top.index = state.stack.top().index
+    var top = state.stack.top()
+    state.top.index = top !== undefined ? top.index : -1
     state.val = state.array[state.top.index]
     
     --state.pos
