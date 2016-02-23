@@ -3,10 +3,15 @@
 ## Siteswap introduction
 Siteswap is a juggling notation used to describe or represent juggling patterns. It encodes the number of beats of each throw, which is related to their height, and the hand to which the throw is to be made. However, it does not describe body movements such as behind-the-back and under-the-leg.
 
-A siteswap pattern can be expressed through number sequence that represent a cycle of throws with different heights. These heights must meet certain mathematical rules. For more information, see [siteswap entry](http://en.wikipedia.org/wiki/Siteswap) in wikipedia.
+A siteswap pattern can be defined as sequence of no-negative integers wich represents a cycle of throws with different heights. This sequence of heights must follow two mathematical rules:
+### 1) Rule of average:
+Given a sequence of heights `a1, a2 ... an` representing a juggling pattern, then `a1 + a2 + ... + an mod n = 0` and `(a1 + a2 + ... + an) / n` is the number of balls used by this juggling pattern.
+
+### 2) Rule of modulus:
+Given a sequence of heights `a1, a2 ... an` representing a juggling pattern and given any pair of numbers `ai` and `aj` of this sequence, then `i != j` implies `(ai + i) mod n != (aj + j) mod n`.
 
 ## Description
-This module allow to compute the whole patterns with specific number of balls, length of cycle (also called period) and heights. Siteswap generator does not compute patterns that are the same except rotations or repetitions. For example, [5,3,1], [3,1,5] and [1,5,3] are the same except rotations and [3,3,3], [3,3] and [3] are the same except repetitions.
+This module allows to compute the whole patterns with specific number of balls, length of cycle (also called period) and heights. Siteswap generator does not compute patterns that are the same except rotations or repetitions. For example, [5,3,1], [3,1,5] and [1,5,3] are the same except rotations and [3,3,3], [3,3] and [3] are the same except repetitions.
 
 
 ## Version
@@ -21,7 +26,7 @@ npm install siteswap-generator
 ``` javascript
 var siteswap = require('siteswap-generator')
 
-var patterns = siteswap.Generator({
+var patterns = siteswap.calculate({
     balls : 3,
     period: {min: 2, max: 3},
     height: 5
@@ -42,19 +47,19 @@ console.log(patterns)
 ## API
 
 - [siteswap](#siteswap--moduleexports)
-  - [siteswap.Generator (options)](#siteswapgenerator-options)
+  - [siteswap.calculate (options)](#siteswapgenerator-options)
     - [options.balls](#optionsballs)
     - [options.period](#optionsperiod)
     - [options.height](#optionsheight)
-  - [siteswap.Buffer (options)](#siteswapbuffer-options)
-    - [siteswap.Buffer#slice (begin, end)](#siteswapbufferslice-begin-end)
-    - [siteswap.Buffer#length](#siteswapbufferlength)
-    - [siteswap.Buffer#maxLength](#siteswapbuffermaxlength)
-    - [siteswap.Buffer#minLength](#siteswapbufferminlength)
+  - [siteswap.Generator (options)](#siteswapgenerator-options)
+    - [siteswap.Generator#slice (begin, end)](#siteswapgeneratorslice-begin-end)
+    - [siteswap.Generator#length](#siteswapgeneratorlength)
+    - [siteswap.Generator#maxLength](#siteswapgeneratormaxlength)
+    - [siteswap.Generator#minLength](#siteswapgeneratorminlength)
 
 ### siteswap === module.exports
 Type: Object
-#### siteswap.Generator (options)
+#### siteswap.calculate (options)
 Type: Function
 
 Returns all of patterns required by `options` object parameter.
@@ -62,7 +67,7 @@ Returns all of patterns required by `options` object parameter.
 ##### options.balls
 Type: Object | Integer
 
-If `options.balls` is an object, this mean the interval of balls of computed patterns.
+If `options.balls` is an object, this means the interval of balls of computed patterns.
 - `options.balls.max` is maximum number of balls. 
 - `options.balls.min` is minimum number of balls of patterns. If it is not defined the minimum number of balls is the same that `options.balls.max`.
 
@@ -71,7 +76,7 @@ If `options.balls` is an integer, it is the same that `options.balls` takes valu
 ##### options.period
 Type: Object | Integer
 
-If `options.period` is an object, this mean the interval of periods which are computed.
+If `options.period` is an object, this means the interval of periods which are computed.
 - `options.period.max` is maximum period.
 - `options.period.min` is minimum period. It takes value 1 by default.
 
@@ -80,9 +85,9 @@ If `options.period` is an integer, it is the same that `options.period` takes va
 ##### options.height
 Type: Object | integer | undefined
 
-If `options.period` is an object:
-- `options.height.max` mean that computed patterns have heights less than or equal to this. `options.height.max` is `options.balls.max` * `options.period.max` by default.
-- `options.height.min` mean that computed patterns have at least one height greater than or equal to this. The default value is 0.
+If `options.height` is an object:
+- `options.height.max` means that will be computed patterns which have heights less than or equal to this. `options.height.max` is `options.balls.max` * `options.period.max` by default.
+- `options.height.min` means that will be computed patterns which have at least one height greater than or equal to this. The default value is 0.
 
 If `options.height` is an integer, this mean the same that `options.height` takes value `{min: 0, max: options.height}`.
 
@@ -90,7 +95,7 @@ If `options.height` is undefined, this mean the same that `options.height` takes
 
 ##### Example:
 ``` javascript
-var patterns = siteswap.Generator({
+var patterns = siteswap.calculate({
     balls : {min: 1, max: 3},
     period: 3,
     height: {min: 5}
@@ -112,14 +117,14 @@ var patterns = siteswap.Generator({
 ] */
 ```
 
-#### siteswap.Buffer (options)
+#### siteswap.Generator (options)
 Type: function
 
-It is a constructor that creates a buffer object. This allow to get the same patterns than `siteswap.Generator` but these patterns can be get **lazily** with `.slice` method.
+It is a constructor that creates a generator object. This allows to get the same patterns than `siteswap.calculate` but these patterns can be get **lazily** with `.slice` method.
 
-##### siteswap.Buffer#slice (begin, end)
+##### siteswap.Generator#slice (begin, end)
 
-It gets slice of patterns generated by `siteswap.Generator` function.
+It gets slice of patterns generated by generator created by `siteswap.Generator`.
 
 ###### begin
 
@@ -131,28 +136,28 @@ zero-based index at which to begin extraction
 
 Type: Integer
 
-zero-based index at which to end extraction.
+zero-based index at which ends extraction.
 
 ###### Considerations:
-`slice` method get patterns sequentially. If buffer object is created and after got from 11th to 20th pattenrs (`.slice(11,20)`), internally `.slice` compute from first to 20th patterns and returns slice from 11th to 20th requested. Then, if is requested 1st to 10th patterns, these are not computed and only are returned because was previously computed.
+`slice` method gets patterns sequentially. If generator object is created and after got from 11th to 20th pattenrs (`.slice(11,20)`), internally `.slice` computes from first to 20th patterns and returns slice from 11th to 20th requested. Then, if is requested 1st to 10th patterns, these are not computed and only are returned because was previously computation.
 
 ##### Example:
 
 ``` javascript
-var buffer = siteswap.Buffer({
+var generator = siteswap.Generator({
     balls : {min: 1, max: 3},
     period: 3,
     height: {min: 5}
 })
 
-buffer.slice(0, 5) /* [
+generator.slice(0, 5) /* [
   [ 9, 0, 0 ],
   [ 8, 0, 1 ],
   [ 7, 2, 0 ],
   [ 7, 1, 1 ],
   [ 6, 3, 0 ],
 ]*/
-buffer.slice(5, 10) /* [
+generator.slice(5, 10) /* [
   [ 6, 1, 2 ],
   [ 6, 0, 3 ],
   [ 5, 3, 1 ],
@@ -161,47 +166,16 @@ buffer.slice(5, 10) /* [
 ]*/
 ```
 
-##### siteswap.Buffer#length
+##### siteswap.Generator#length
 Type: integer | undefined
 
-length of patterns if all patterns was computed with `slice` method or undefined if not.
+length of patterns is `undefined` if the whole of patterns have not been computed by `slice` method yet. Otherwise, it is the number of patterns.
 
-##### siteswap.Buffer#maxLength
+##### siteswap.Generator#maxLength
 maximum of length of patterns list.
 
-##### siteswap.Buffer#minLength
+##### siteswap.Generator#minLength
 minimum of length of patterns list.
-
-## CLI (Comand Line Interface)
-
-### Install
-``` bash
-$ npm install -g siteswap-generator
-```
-
-### Usage
-``` bash
-$ siteswap [balls.min:]balls.max [period.min:]period.max [[height.min:]height.max]
-```
-
-### Examples
-``` bash
-$ siteswap 3 3 5
-[ [ 5, 3, 1 ],
-  [ 5, 2, 2 ],
-  [ 5, 0, 4 ],
-  [ 4, 4, 1 ],
-  [ 4, 2, 3 ],
-  [ 5, 1 ],
-  [ 4, 2 ],
-  [ 3 ] ]
-```
-
-``` bash
-$ siteswap 1:3 3:3 5:5
-[ [ 5, 3, 1 ], [ 5, 2, 2 ], [ 5, 0, 4 ], [ 5, 0, 1 ] ]
-```
-
 
 ## License
 MIT
