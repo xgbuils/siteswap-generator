@@ -3,6 +3,12 @@ var _ = require('./utils.js')
 
 var PARAM_NAMES = require('./conf/PARAM_NAMES')
 var DEFAULT_VALUES = require('./conf/DEFAULT_VALUES')
+var siteswapTraverse = require('./siteswap-traverse.js')
+var compose = require('iterum/src/fn/compose')
+var Iterum = require('iterum')
+var Empty = Iterum.Empty
+var Range = Iterum.Range
+var Value = Iterum.Value
 
 function Generator(options) {
     this.minLength = 0
@@ -10,6 +16,7 @@ function Generator(options) {
     if (!(this instanceof Generator)) {
         return new Generator(options)
     }
+    
     this.patterns = new LazyArray({
         init: function () {
             this.state = new State(options)
@@ -26,31 +33,17 @@ function State (options) {
         _.setDefaultValues.call(this, name, 'max', DEFAULT_VALUES[i])
         _.setDefaultValues.call(this, name, 'min', DEFAULT_VALUES[i])
     }, this)
+    var self = this
 
-    this.methods = {
-        start: {
-            b: function () {
-                this.b = this.balls.max
-                this.bMin = this.balls.min
-            },
-            p: function () {
-                this.p = this.period.max
-                this.pMin = Math.max(this.period.min, 1)
-            },
-            h: function () {
-                this.h = Math.min(this.height.max, this.p * this.b)
-                this.hMin = Math.max(this.height.min, this.b + (this.p > 1 ? 1 : 0))
-            }
+    this.foo = compose(
+        function (_) {
+            _(_)
+            return siteswapTraverse(self)
+        },
+        function (e) {
+            return siteswap.apply(null, e)
         }
-    }
-}
-
-State.prototype.start = function (ch) {
-    this.methods.start[ch].call(this)
-}
-
-State.prototype.cond = function (ch) {
-    return this[ch] >= this[ch + 'Min']
+    )()
 }
 
 Generator.prototype.slice = function (begin, end) {
@@ -69,47 +62,14 @@ Generator.prototype.slice = function (begin, end) {
 module.exports = Generator
 
 function getNextPattern (state) {
-    if (state.b === undefined) {
-        state.start('b')
+    var x = state.foo.next()
+
+    if (x.done) {
+        return undefined
+    } else {
+        return x.value
     }
-
-    while (state.cond('b')) {
-        if (state.p === undefined) {
-            state.start('p')
-        }
-        
-        while (state.cond('p')) {
-            if (state.h === undefined) {
-                state.start('h')
-            }
-
-            while (state.cond('h')) {
-                if (!state.siteswapIterator) {
-                    state.siteswapIterator = siteswap(state.b, state.p, state.h)
-                }
-                var x = state.siteswapIterator.next()
-                if (!x.done)  {
-                    return x.value
-                } else {
-                    state.siteswapIterator = undefined
-                }
-                --state.h
-            }
-            state.h = undefined
-            --state.p
-        }
-        state.p = undefined
-        --state.b
-    }
-
-    return undefined
 }
-
-var compose = require('iterum/src/fn/compose')
-var Iterum = require('iterum')
-var Empty = Iterum.Empty
-var Range = Iterum.Range
-var Value = Iterum.Value
 
 function siteswap (balls, period, height) {
     var args = [
