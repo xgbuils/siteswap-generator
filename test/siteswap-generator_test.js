@@ -134,44 +134,22 @@ describe('complex returns', function () {
 
 describe('generator tests', function () {
     describe('when it is got 1st and 2nd pattern', function () {
+        var iterator
         beforeEach(function () {
-           this.generator = new siteswap.Generator({
+            iterator = siteswap.Generator({
                 balls : {min: 3, max:3},
                 period: {min: 3, max:3},
                 height: {min: 5, max:5},
             })
-            this.generator.slice(0,2)
         })
 
-        it('.minLength should be 2', function () {
-            this.generator.minLength.should.be.eql(2)
-        })
-        it('.maxLength should be Infinity', function () {
-            this.generator.maxLength.should.be.eql(Infinity)
-        })
-        it('.length should be undefined', function () {
-            should(this.generator.length).be.eql(undefined)
-        })
-    })
-
-    describe('when it is got all patterns', function () {
-        beforeEach(function () {
-           this.generator = new siteswap.Generator({
-                balls : {min: 3, max:3},
-                period: {min: 3, max:3},
-                height: {min: 5, max:5},
-            })
-            this.generator.slice(0,4)
+        it('first value is [5, 3, 1]', function () {
+            iterator.next().value.should.be.eql([5, 3, 1])
         })
 
-        it('.minLength should be 3', function () {
-            this.generator.minLength.should.be.eql(3)
-        })
-        it('.maxLength should be 3', function () {
-            this.generator.maxLength.should.be.eql(3)
-        })
-        it('.length should be 3', function () {
-            this.generator.length.should.be.eql(3)
+        it('second value is [5, 2, 2]', function () {
+            iterator.next()
+            iterator.next().value.should.be.eql([5, 2, 2])
         })
     })
 })
