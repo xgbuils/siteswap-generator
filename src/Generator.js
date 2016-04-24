@@ -1,4 +1,4 @@
-var LazyArray           = require('lazyarray-lite')
+var LazyArray = require('lazyarray-lite')
 var _ = require('./utils.js')
 
 var PARAM_NAMES = require('./conf/PARAM_NAMES')
@@ -84,9 +84,14 @@ function getNextPattern (state) {
             }
 
             while (state.cond('h')) {
-                var pattern = getNextSpecificPattern(state)
-                if (pattern)  {
-                    return pattern
+                if (!state.siteswapIterator) {
+                    state.siteswapIterator = siteswap(state.b, state.p, state.h)
+                }
+                var x = state.siteswapIterator.next()
+                if (!x.done)  {
+                    return x.value
+                } else {
+                    state.siteswapIterator = undefined
                 }
                 --state.h
             }
@@ -100,103 +105,96 @@ function getNextPattern (state) {
     return undefined
 }
 
-function createStateVariables(state) {
-    state.used  = {}
-    state.stack = new Stack()
-    state.array = []
-    state.pos   = 0
-    state.rest  = state.b * state.p
-    state.val   = state.h
-    state.top   = {
-        min: state.h,
-        index: -1
+var compose = require('iterum/src/fn/compose')
+var Iterum = require('iterum')
+var Empty = Iterum.Empty
+var Range = Iterum.Range
+var Value = Iterum.Value
+
+function siteswap (balls, period, height) {
+    var args = [
+        beginningGeneratorCreator(balls, period, height, 0)
+    ]
+    var length = period - 1;
+    for (var index = 1; index < length; ++index) {
+        args.push(middleGeneratorCreator(balls, period, height, index))
     }
-    state.i     = state.h
-    state.num   = state.h % state.p
-    pushScope(state)
+    args.push(endGeneratorCreator(balls, period, height, length))
+    return compose.apply(null, args)()
 }
 
-function getNextSpecificPattern(state) {
-    if (state.pos === undefined)  {
-        createStateVariables(state)
-    }
-    while ((state.i >= state.top.min || state.pos > 1)) {
-        var pattern
-        var posIsEqualToPeriod = state.pos === state.p
-        var existsPattern = posIsEqualToPeriod && state.top.index === 0
-        if (existsPattern) {
-            pattern = [].concat(state.array)
+function beginningGeneratorCreator (balls, period, height, index) {
+    return function (_) {
+        var mod = (height + index) % period
+        var options = {
+            rest: balls * period - height,
+            used: {},
+            pattern: [height],
         }
+        options.used[mod] = true
+        var index = period === 1 ? -1 : 0
+        var pointer = 0
+        return createNextRange(options, index, pointer, period, height, _)
+    }
+}
 
-        if (posIsEqualToPeriod || state.i < state.top.min) {
-            popScope(state)
+function middleGeneratorCreator (balls, period, height, index) {
+    return function (options, h, pointer, _) {
+        rebuildOptions(options, period, index)
+        
+        var mod = (h + index) % period
+        if (options.used[mod]) {
+            return new Iterum(Empty())
         } else {
-            state.num = (state.i + state.pos) % state.p
-            if (state.used[state.num] === undefined) {
-                pushScope(state)
+            updateOptions(options, mod, h)
+            pointer = options.pattern[pointer] > h ? 0 : pointer + 1
+            return createNextRange(options, index, pointer, period, height, _)
+        }
+    }
+}
+
+function endGeneratorCreator (balls, period, height, index) {
+    return function (options, h, pointer) {
+        rebuildOptions(options, period, index)
+        
+        var mod = (h + index) % period
+        if (index === 0) {
+            return new Iterum(Value([].concat(options.pattern)))
+        } else if (options.used[mod]) {
+            return new Iterum(Empty())
+        } else {
+            updateOptions(options, mod, h)
+            pointer = options.pattern[pointer] > h ? 0 : pointer + 1
+            if (pointer === 0) {
+                return new Iterum(Value([].concat(options.pattern)))
             } else {
-                --state.i
+                return new Iterum(Empty())
             }
         }
-
-        if (existsPattern) {
-            return pattern
-        }
-    }
-    state.pos = undefined
-    return false
-}
-
-function pushScope (state) {
-    // always state.val >= state.i
-    state.top.index = state.val > state.i ? 0 : state.top.index + 1
-    state.used[state.num] = true
-    state.array.push(state.i)
-    state.val = state.array[state.top.index]
-
-    state.rest -= state.i
-    ++state.pos
-
-    state.stack.push(state.top)
-
-    if (state.pos < state.p) {
-        var n   = state.p - state.pos
-        state.i = Math.min(state.val, state.rest)
-        var min = state.rest - state.h * (n - 1)
-        if (n > 1) min++
-        state.top = {
-            min: Math.max(min, 0),
-            index: state.top.index
-        }
     }
 }
 
-function popScope(state) {
-    state.top = state.stack.pop()
+function rebuildOptions(options, period, index) {
+    var i = options.pattern.length - 1
 
-    var top = state.stack.top()
-    state.top.index = top !== undefined ? top.index : -1
-    state.val = state.array[state.top.index]
-    
-    --state.pos
-    state.rest += state.i = state.array.pop()
-    state.num   = (state.i + state.pos) % state.p
-    state.used[state.num] = undefined
-    --state.i
+    while (index > 0 && i >= index) {
+        var h = options.pattern.pop()
+        var mod = (h + i) % period
+        options.used[mod] = undefined
+        options.rest += h
+        --i
+    }
 }
 
-function Stack() {
-    this.elems = []
+function updateOptions (options, mod, h) {
+    options.rest -= h
+    options.used[mod] = true
+    options.pattern.push(h)
 }
 
-Stack.prototype = {
-    push: function (e) {
-        return this.elems.push(e)
-    },
-    pop: function () {
-        return this.elems.pop()
-    },
-    top: function () {
-        return this.elems[this.elems.length - 1]
-    },
+function createNextRange (options, index, pointer, period, height, _) {
+    var maxHeight = Math.min(options.rest, options.pattern[pointer])
+    var minHeight = Math.max(options.rest - height * (period - index - 2), 0)
+    _(options, _, pointer)
+    return new Iterum(Range(maxHeight, minHeight, -1))
 }
