@@ -10,6 +10,7 @@ var stylus      = require('gulp-stylus')
 var uglify      = require('gulp-uglify')
 var watchify    = require('watchify')
 var mocha       = require('gulp-mocha');
+var eslint = require('gulp-eslint')
 
 var reload      = browserSync.reload
 var taskName    = process.argv[2]
@@ -101,4 +102,10 @@ gulp.task('serve', ['build'], function() {
 gulp.task('test', function() {
   return gulp.src('test/**/*_test.js', {read: false})
     .pipe(mocha())
+})
+
+gulp.task('lint', function () {
+    return gulp.src(['./**/*.js', '!./test/input/**/*.js', '!./test/output/**/*.js'])
+        .pipe(eslint())
+        .pipe(eslint.format())
 })
