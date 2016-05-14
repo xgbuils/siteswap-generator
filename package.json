@@ -40,6 +40,6 @@
   "license": "ISC",
   "dependencies": {
     "is-object": "^1.0.1",
-    "iterum": "^0.3.0"
+    "iterum": "^0.5.0"
   }
 }

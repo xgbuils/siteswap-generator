@@ -1,12 +1,8 @@
 var Generator = require('./Generator.js')
+var Iterum = require('iterum')
 
 function calculate (options) {
-	var it = Generator(options)
-	var values = []
-    while (!(state = it.next()).done) {
-        values.push(state.value)
-    }
-    return values
+	return Iterum(Generator, options).toArray()
 }
 
 module.exports = calculate
