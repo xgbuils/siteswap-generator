@@ -1,4 +1,7 @@
+var Generator = require('./src/Generator')
+var calculate = require('./src/calculate')
+
 module.exports = {
-	Generator: require('./src/Generator'),
-	calculate: require('./src/calculate')
+    Generator: Generator,
+    calculate: calculate
 }

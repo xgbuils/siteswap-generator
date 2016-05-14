@@ -6,7 +6,7 @@ var computeGenerator = require('./compute-generator.js')
 var Iterum = require('iterum')
 var compose = Iterum.compose
 
-function Generator(options) {
+function Generator (options) {
     var opts = {}
     _.transformParams.call(opts, options || {}, PARAM_NAMES)
     _.each(PARAM_NAMES, function (name, i) {

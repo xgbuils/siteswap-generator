@@ -100,9 +100,9 @@ describe('transformParams', function () {
             it('context.height has property min or max with this number', function () {
                 var context = {}
                 var params = {
-                	period: {
-                		max: 1
-                	},
+                    period: {
+                        max: 1
+                    },
                     height: {
                         min: new Number(8)
                     }
@@ -119,7 +119,7 @@ describe('transformParams', function () {
                 var context = {}
                 var params = {
                     height: {
-                    	max: {},
+                        max: {},
                         min: function () {}
                     }
                 }

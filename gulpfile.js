@@ -1,13 +1,13 @@
-var gulp        = require('gulp')
-var mocha       = require('gulp-mocha');
+var gulp = require('gulp')
+var mocha = require('gulp-mocha')
 var eslint = require('gulp-eslint')
 
 /*
  * test task
  */
-gulp.task('test', function() {
-  return gulp.src('test/**/*_test.js', {read: false})
-    .pipe(mocha())
+gulp.task('test', function () {
+    return gulp.src('test/**/*_test.js', {read: false})
+        .pipe(mocha())
 })
 
 /*

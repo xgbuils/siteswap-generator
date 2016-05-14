@@ -8,7 +8,7 @@ function computeGenerator (balls, period, height) {
     var args = [
         beginningGeneratorCreator(balls, period, height, 0)
     ]
-    var length = period - 1;
+    var length = period - 1
     for (var index = 1; index < length; ++index) {
         args.push(middleGeneratorCreator(balls, period, height, index))
     }
@@ -16,13 +16,13 @@ function computeGenerator (balls, period, height) {
     return compose.apply(null, args)()
 }
 
-function beginningGeneratorCreator (balls, period, height, index) {
+function beginningGeneratorCreator (balls, period, height) {
     return function (_) {
         var mod = (height + index) % period
         var options = {
             rest: balls * period - height,
             used: {},
-            pattern: [height],
+            pattern: [height]
         }
         options.used[mod] = true
         var index = period === 1 ? -1 : 0
@@ -34,7 +34,7 @@ function beginningGeneratorCreator (balls, period, height, index) {
 function middleGeneratorCreator (balls, period, height, index) {
     return function (options, h, pointer, _) {
         rebuildOptions(options, period, index)
-        
+
         var mod = (h + index) % period
         if (options.used[mod]) {
             return Iterum(Empty()).build()()
@@ -49,7 +49,7 @@ function middleGeneratorCreator (balls, period, height, index) {
 function endGeneratorCreator (balls, period, height, index) {
     return function (options, h, pointer) {
         rebuildOptions(options, period, index)
-        
+
         var mod = (h + index) % period
         var generator
         if (index === 0) {
@@ -69,7 +69,7 @@ function endGeneratorCreator (balls, period, height, index) {
     }
 }
 
-function rebuildOptions(options, period, index) {
+function rebuildOptions (options, period, index) {
     var i = options.pattern.length - 1
 
     while (index > 0 && i >= index) {

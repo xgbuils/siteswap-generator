@@ -7,15 +7,10 @@ function each (array, cb, context) {
     }
 }
 
-function errorMessage(parameterName, parameterType, expectedTypes) {
-    return '`' + parameterName + '` is ' + parameterType 
-         + '. Expected ' + expectedTypes.join(' or ') + '.'
-}
-
 var _ = {}
 
-each(['Function', 'Number'], function(name) {
-    _['is' + name] = function(obj) {
+each(['Function', 'Number'], function (name) {
+    _['is' + name] = function (obj) {
         return toString.call(obj) === '[object ' + name + ']'
     }
 })
@@ -49,7 +44,7 @@ function setDefaultValues (paramName, key, defaults, error) {
             ref[key] = defaultValue.call(this)
         } else {
             throw new Error(error(paramName, key))
-        } 
+        }
     }
 }
 
